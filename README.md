@@ -11,12 +11,12 @@ Clone, audit, install globally. Reading the source is the point. Install from th
 ```bash
 git clone https://github.com/ADI-Foundation-Labs/adi-mcp-server.git
 cd adi-mcp-server
-git checkout v1.0.0
+git checkout v1.0.1
 bun i -g .          # installs globally from the audited clone
 adi-mcp-server      # binary on PATH via package.json "bin"
 ```
 
-Machines without bun: `npm i -g .` from the same clone. Update: `git pull && git checkout v1.0.0 && bun i -g .`.
+Machines without bun: `npm i -g .` from the same clone. Update: `git pull && git checkout v1.0.1 && bun i -g .`.
 
 ## Configure
 
