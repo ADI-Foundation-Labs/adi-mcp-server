@@ -6,16 +6,17 @@ Agents can answer — and execute — "how do I get USDC from Ethereum onto ADI 
 
 ## Install
 
-Clone, audit, install globally. Reading the source is the point.
+Clone, audit, install globally. Reading the source is the point. Install from the tagged release.
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/ADI-Foundation-Labs/adi-mcp-server.git
 cd adi-mcp-server
+git checkout v1.0.0
 bun i -g .          # installs globally from the audited clone
 adi-mcp-server      # binary on PATH via package.json "bin"
 ```
 
-Machines without bun: `npm i -g .` from the same clone. Update: `git pull && bun i -g .`.
+Machines without bun: `npm i -g .` from the same clone. Update: `git pull && git checkout v1.0.0 && bun i -g .`.
 
 ## Configure
 
@@ -32,7 +33,7 @@ Add to your MCP client (Claude Desktop, Cursor, `.mcp.json`, …):
 }
 ```
 
-`ADI_MCP_PRIVATE_KEY` is optional. Without it the server runs read-only: `bridge_deposit`, `bridge_withdraw`, and `ccip_transfer` are disabled. The server never stores keys.
+`ADI_MCP_PRIVATE_KEY` is optional. Without it the server runs read-only — the four write tools (`bridge_deposit`, `bridge_withdraw`, `claim_withdrawal`, `ccip_transfer`) are not registered. The server never stores keys.
 
 ## Tools
 
@@ -80,9 +81,10 @@ Add to your MCP client (Claude Desktop, Cursor, `.mcp.json`, …):
 ```bash
 bun i
 bun run typecheck   # tsc --noEmit
-bun test            # unit tests (routing, token resolution)
+bun test            # unit tests (routing, token resolution, write policy)
 bun run test/smoke.ts   # live smoke test against mainnet RPC
 bun run test/write.ts   # write-tool registration + deposit tx construction (needs ADI_MCP_PRIVATE_KEY)
+bun run test/live.ts    # live deposit → withdraw → claim round trip (needs ADI_MCP_PRIVATE_KEY, spends funds)
 ```
 
 ## Architecture
@@ -93,7 +95,7 @@ src/
   tools.ts      tool definitions + registration
   domain.ts     networks, tokens, bridges, constraints (source of truth)
   routing.ts    funding-path planning
-  providers.ts  viem clients + Blockscout v1 API + zks_* RPC
+  providers.ts  viem clients + Blockscout v1 API + zks_* RPC (L1 fallbacks)
   bridge.ts     canonical bridge deposit/withdraw/claim construction
   ccip.ts       CCIP ccipSend construction
   erc8004.ts    ERC-8004 registry reads (identity, reputation, validation)
